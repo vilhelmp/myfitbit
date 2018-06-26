@@ -121,3 +121,155 @@ class FitbitExport(object):
             })
         return heartrate
 
+    def steps_intraday_filenames(self):
+        start = date(2017, 1, 1)
+        days = 0
+        while 1:
+            d = start + timedelta(days=days)
+            days += 1
+            if d == date.today():
+                return
+
+            filename = self.filename(
+                'steps_intraday',
+                '{:04d}'.format(d.year),
+                'steps_intraday.{:04d}.{:02d}.{:02d}.json'.format(
+                    d.year,
+                    d.month,
+                    d.day
+            ))
+            yield d, filename
+
+    def get_steps_intraday(self):
+        def compress(data):
+            minutes = [None] * 24 * 60
+            for o in data:
+                h, m, s = map(int, o['time'].split(':'))
+                i = h * 60 + m
+                minutes[i] = o['value']
+            return minutes
+
+        steps = []
+        for d, filename in self.steps_intraday_filenames():
+            if not os.path.isfile(filename):
+                continue
+            data = json.load(open(filename))
+            if not data:
+                continue
+            steps.append({
+                'date': d.isoformat(),
+                'minutes': compress(data),
+            })
+        return steps
+
+    def sync_steps_intraday(self):
+        for d, filename in self.steps_intraday_filenames():
+            if os.path.isfile(filename):
+                log.info('Cached: %s', filename)
+                continue
+
+            log.info('Downloading: %s', filename)
+            hr = self.client.get_steps_intraday(d)
+            self.write(filename, hr)
+
+    def distance_intraday_filenames(self):
+        start = date(2017, 1, 1)
+        days = 0
+        while 1:
+            d = start + timedelta(days=days)
+            days += 1
+            if d == date.today():
+                return
+
+            filename = self.filename(
+                'distance_intraday',
+                '{:04d}'.format(d.year),
+                'distance_intraday.{:04d}.{:02d}.{:02d}.json'.format(
+                    d.year,
+                    d.month,
+                    d.day
+            ))
+            yield d, filename
+
+    def get_distance_intraday(self):
+        def compress(data):
+            minutes = [None] * 24 * 60
+            for o in data:
+                h, m, s = map(int, o['time'].split(':'))
+                i = h * 60 + m
+                minutes[i] = o['value']
+            return minutes
+
+        distance = []
+        for d, filename in self.distance_intraday_filenames():
+            if not os.path.isfile(filename):
+                continue
+            data = json.load(open(filename))
+            if not data:
+                continue
+            distance.append({
+                'date': d.isoformat(),
+                'minutes': compress(data),
+            })
+        return distance
+
+    def sync_distance_intraday(self):
+        for d, filename in self.distance_intraday_filenames():
+            if os.path.isfile(filename):
+                log.info('Cached: %s', filename)
+                continue
+
+            log.info('Downloading: %s', filename)
+            hr = self.client.get_distance_intraday(d)
+            self.write(filename, hr)
+
+    def elevation_intraday_filenames(self):
+        start = date(2017, 1, 1)
+        days = 0
+        while 1:
+            d = start + timedelta(days=days)
+            days += 1
+            if d == date.today():
+                return
+
+            filename = self.filename(
+                'elevation_intraday',
+                '{:04d}'.format(d.year),
+                'elevation_intraday.{:04d}.{:02d}.{:02d}.json'.format(
+                    d.year,
+                    d.month,
+                    d.day
+            ))
+            yield d, filename
+
+    def get_elevation_intraday(self):
+        def compress(data):
+            minutes = [None] * 24 * 60
+            for o in data:
+                h, m, s = map(int, o['time'].split(':'))
+                i = h * 60 + m
+                minutes[i] = o['value']
+            return minutes
+
+        elevation = []
+        for d, filename in self.elevation_intraday_filenames():
+            if not os.path.isfile(filename):
+                continue
+            data = json.load(open(filename))
+            if not data:
+                continue
+            elevation.append({
+                'date': d.isoformat(),
+                'minutes': compress(data),
+            })
+        return elevation
+
+    def sync_elevation_intraday(self):
+        for d, filename in self.elevation_intraday_filenames():
+            if os.path.isfile(filename):
+                log.info('Cached: %s', filename)
+                continue
+
+            log.info('Downloading: %s', filename)
+            hr = self.client.get_elevation_intraday(d)
+            self.write(filename, hr)

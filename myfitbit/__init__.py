@@ -148,5 +148,33 @@ class Fitbit(object):
         r.raise_for_status()
         return json.loads(r.text)['activities-heart-intraday']['dataset']
 
-    def get_steps(self):
-        raise NotImplementedError
+    def get_steps_intraday(self, date):
+        r = self.session.get('https://api.fitbit.com/1/user/-/activities/steps/date/{}/{}/1min.json'
+            .format(
+                str(date),
+                str(date)
+            )
+        )
+        r.raise_for_status()
+        return json.loads(r.text)['activities-steps-intraday']['dataset']
+
+    def get_distance_intraday(self, date):
+        r = self.session.get('https://api.fitbit.com/1/user/-/activities/distance/date/{}/{}/1min.json'
+            .format(
+                str(date),
+                str(date)
+            )
+        )
+        r.raise_for_status()
+        return json.loads(r.text)['activities-distance-intraday']['dataset']
+
+    def get_elevation_intraday(self, date):
+        r = self.session.get('https://api.fitbit.com/1/user/-/activities/elevation/date/{}/{}/1min.json'
+            .format(
+                str(date),
+                str(date)
+            )
+        )
+        r.raise_for_status()
+        return json.loads(r.text)['activities-elevation-intraday']['dataset']
+

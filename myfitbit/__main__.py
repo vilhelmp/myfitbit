@@ -35,7 +35,9 @@ def main():
 
     export.sync_sleep()
     export.sync_heartrate_intraday()
-
+    export.sync_steps_intraday()
+    export.sync_distance_intraday()
+    export.sync_elevation_intraday()
 
 if __name__ == '__main__':
     main()
