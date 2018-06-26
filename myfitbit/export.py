@@ -273,3 +273,40 @@ class FitbitExport(object):
             log.info('Downloading: %s', filename)
             hr = self.client.get_elevation_intraday(d)
             self.write(filename, hr)
+
+    def sync_weight(self):
+        month = 2015 * 12
+        while 1:
+            # sync start 2015, one month at a time 
+            date_start = date(month // 12, month % 12 + 1, 1)
+            month += 1
+            date_end =   date(month // 12, month % 12 + 1, 1)
+
+            if date_start > date.today():
+                break
+
+            partial = date_end > date.today()
+            partial_filename = self.filename('weight', 'weight.{:04d}.{:02d}.partial.json'.format(
+                date_start.year,
+                date_start.month,
+            ))
+            filename = self.filename('weight', 'weight.{:04d}.{:02}.json'.format(
+                date_start.year,
+                date_start.month,
+            ))
+
+            if os.path.isfile(partial_filename):
+                os.remove(partial_filename)
+
+            if partial:
+                filename = partial_filename
+            elif os.path.isfile(filename):
+                log.info('Cached: %s', filename)
+                continue
+
+            log.info('Downloading: %s', filename)
+            weight = self.client.get_weight_range(
+                date_start,
+                date_end - timedelta(days=1)
+            )
+            self.write(filename, weight)

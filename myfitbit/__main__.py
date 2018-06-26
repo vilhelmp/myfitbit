@@ -38,6 +38,7 @@ def main():
     export.sync_steps_intraday()
     export.sync_distance_intraday()
     export.sync_elevation_intraday()
+    export.sync_weight()
 
 if __name__ == '__main__':
     main()
