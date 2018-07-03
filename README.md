@@ -1,3 +1,6 @@
+
+**NB: This is a fork. I just added a few things to experiment a bit. The Knio version is most probably actively developed. Consider using that one.**
+
 # MyFitbit
 
 Because *"Your data belongs to you!"*
