@@ -32,12 +32,17 @@ def main():
         raise
 
     export = FitbitExport('.', f)
-
+    
+    # Daily data
     export.sync_sleep()
+    export.sync_heartrate()
+    # Intraday data
     export.sync_heartrate_intraday()
     export.sync_steps_intraday()
     export.sync_distance_intraday()
     export.sync_elevation_intraday()
+    # Unevenly spaced data
+    export.sync_activities()
     export.sync_weight()
 
 if __name__ == '__main__':

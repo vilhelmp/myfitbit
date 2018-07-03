@@ -7,6 +7,9 @@ from datetime import date, time, timedelta
 log = logging.getLogger(__name__)
 
 class FitbitExport(object):
+    '''
+    Local data store of Fitbit json objects.
+    '''
     def __init__(self, root, client=None, user_id=None):
         self.root = os.path.abspath(root)
         self.client = client
@@ -23,7 +26,15 @@ class FitbitExport(object):
         with open(filename, 'w') as f:
             f.write(json.dumps(data, indent=2, sort_keys=True))
 
-    def sync_sleep(self):
+    def sync_ranged_data(self, name, client_fn):
+        '''
+        Downloads date-range time series data from
+        the FitBit API to the local data store.
+        
+        Starts from 2015 and moves forward one month at a time 
+        until either hitting the rate limit, or todays date.
+        
+        '''
         month = 2015 * 12
         while 1:
             date_start = date(month // 12, month % 12 + 1, 1)
@@ -34,11 +45,13 @@ class FitbitExport(object):
                 break
 
             partial = date_end > date.today()
-            partial_filename = self.filename('sleep', 'sleep.{:04d}.{:02d}.partial.json'.format(
+            partial_filename = self.filename(name, '{}.{:04d}.{:02d}.partial.json'.format(
+                name,
                 date_start.year,
                 date_start.month,
             ))
-            filename = self.filename('sleep', 'sleep.{:04d}.{:02}.json'.format(
+            filename = self.filename(name, '{}.{:04d}.{:02}.json'.format(
+                name,
                 date_start.year,
                 date_start.month,
             ))
@@ -53,14 +66,14 @@ class FitbitExport(object):
                 continue
 
             log.info('Downloading: %s', filename)
-            sleep = self.client.get_sleep_range(
+            data = client_fn(
                 date_start,
                 date_end - timedelta(days=1)
             )
-            self.write(filename, sleep)
+            self.write(filename, data)
 
-    def heartrate_intraday_filenames(self):
-        start = date(2017, 1, 1)
+    def day_filenames(self, name):
+        start = date(2015, 1, 1)
         days = 0
         while 1:
             d = start + timedelta(days=days)
@@ -69,26 +82,69 @@ class FitbitExport(object):
                 return
 
             filename = self.filename(
-                'heartrate_intraday',
+                name,
                 '{:04d}'.format(d.year),
-                'heartrate_intraday.{:04d}.{:02d}.{:02d}.json'.format(
+                '{}.{:04d}.{:02d}.{:02d}.json'.format(
+                    name,
                     d.year,
                     d.month,
                     d.day
             ))
             yield d, filename
 
-    def sync_heartrate_intraday(self):
-        for d, filename in self.heartrate_intraday_filenames():
+    def month_filenames(self, name):
+        month = 2015 * 12
+        return "Not implemented"
+        
+    # Ranged syncs
+    def sync_sleep(self):
+        '''
+        Downloads sleep data from the FitBit API to the local data store.
+        Syncs one month at a time.
+        '''
+        self.sync_ranged_data('sleep', self.client.get_sleep_range)
+
+    def sync_heartrate(self):
+        '''
+        Downloads heartrate data from the FitBit API to the local data store.
+        Syncs one month at a time.
+        '''
+        self.sync_ranged_data('heartrate', self.client.get_heartrate_range)
+
+    #Daily syncs
+    def sync_activities(self):
+        '''
+        Downloads daily activities data from the FitBit API
+        to the local data store. Activities are not evenly spaced
+        e.g. you do not go for a run exactly the same time every day...
+        '''
+        for d, filename in self.day_filenames('activities'):
             if os.path.isfile(filename):
                 log.info('Cached: %s', filename)
                 continue
 
             log.info('Downloading: %s', filename)
-            hr = self.client.get_heartrate_intraday(d)
+            hr = self.client.get_activities(d)
             self.write(filename, hr)
 
     def get_sleep(self):
+        '''
+        Return sleep data from the local store.
+        Returns: [{sleep_data}, ...]
+        where `sleep_data` is the inner dict from
+        https://dev.fitbit.com/build/reference/web-api/sleep/
+        
+        Syncs one day (night) at a time. There are a wealth of 
+        information. However there are two possible types of sleep data
+            
+            - 'classic' from old devices such as Charge, Charge HR etc
+            
+            - 'stages' from new devices such as Charge 2, Alta HR etc
+            
+        The 'type' column gives which one, and the levels column 
+        gives the different data. All other columns should be the same
+        for the two.
+        '''
         sleep = []
         for dir, dirs, files in os.walk(self.filename('sleep')):
             for file in files:
@@ -99,7 +155,37 @@ class FitbitExport(object):
                 sleep.extend(data)
         return sleep
 
+    # Intraday syncs
+    def sync_heartrate_intraday(self):
+        '''
+        Downloads heartrate intraday data from the FitBit API
+        to the local data store. 
+        '''
+        for d, filename in self.day_filenames('heartrate_intraday'):
+            if os.path.isfile(filename):
+                log.info('Cached: %s', filename)
+                continue
+
+            log.info('Downloading: %s', filename)
+            hr = self.client.get_heartrate_intraday(d)
+            self.write(filename, hr)
+
     def get_heartrate_intraday(self):
+        '''
+        Return heartrate intraday data from the local store.
+        Returns: [{hr_data}, ...]
+        where `hr_data` is:
+        {
+            "date": "2016-07-08",
+            "minutes": [int, ...]
+        }
+        minutes is an array of 1440 minutes in the day and the HR during that minute
+        
+        It is possible to get 1 sec resolution, but this sync gives 1 min.
+        
+        
+        '''
+
         def compress(data):
             minutes = [None] * 24 * 60
             for o in data:
@@ -109,7 +195,7 @@ class FitbitExport(object):
             return minutes
 
         heartrate = []
-        for d, filename in self.heartrate_intraday_filenames():
+        for d, filename in self.day_filenames('heartrate_intraday'):
             if not os.path.isfile(filename):
                 continue
             data = json.load(open(filename))
@@ -121,25 +207,6 @@ class FitbitExport(object):
             })
         return heartrate
 
-    def steps_intraday_filenames(self):
-        start = date(2017, 1, 1)
-        days = 0
-        while 1:
-            d = start + timedelta(days=days)
-            days += 1
-            if d == date.today():
-                return
-
-            filename = self.filename(
-                'steps_intraday',
-                '{:04d}'.format(d.year),
-                'steps_intraday.{:04d}.{:02d}.{:02d}.json'.format(
-                    d.year,
-                    d.month,
-                    d.day
-            ))
-            yield d, filename
-
     def get_steps_intraday(self):
         def compress(data):
             minutes = [None] * 24 * 60
@@ -150,7 +217,7 @@ class FitbitExport(object):
             return minutes
 
         steps = []
-        for d, filename in self.steps_intraday_filenames():
+        for d, filename in self.day_filenames('steps_intraday'):
             if not os.path.isfile(filename):
                 continue
             data = json.load(open(filename))
@@ -163,7 +230,9 @@ class FitbitExport(object):
         return steps
 
     def sync_steps_intraday(self):
-        for d, filename in self.steps_intraday_filenames():
+        """Downloads steps intraday data from the FitBit API
+        to the local data store. """
+        for d, filename in self.day_filenames('steps_intraday'):
             if os.path.isfile(filename):
                 log.info('Cached: %s', filename)
                 continue
@@ -171,25 +240,6 @@ class FitbitExport(object):
             log.info('Downloading: %s', filename)
             hr = self.client.get_steps_intraday(d)
             self.write(filename, hr)
-
-    def distance_intraday_filenames(self):
-        start = date(2017, 1, 1)
-        days = 0
-        while 1:
-            d = start + timedelta(days=days)
-            days += 1
-            if d == date.today():
-                return
-
-            filename = self.filename(
-                'distance_intraday',
-                '{:04d}'.format(d.year),
-                'distance_intraday.{:04d}.{:02d}.{:02d}.json'.format(
-                    d.year,
-                    d.month,
-                    d.day
-            ))
-            yield d, filename
 
     def get_distance_intraday(self):
         def compress(data):
@@ -201,7 +251,7 @@ class FitbitExport(object):
             return minutes
 
         distance = []
-        for d, filename in self.distance_intraday_filenames():
+        for d, filename in self.day_filenames('distance_intraday'):
             if not os.path.isfile(filename):
                 continue
             data = json.load(open(filename))
@@ -214,7 +264,9 @@ class FitbitExport(object):
         return distance
 
     def sync_distance_intraday(self):
-        for d, filename in self.distance_intraday_filenames():
+        """Downloads distance intraday data from the FitBit API
+        to the local data store. """
+        for d, filename in self.day_filenames('distance_intraday'):
             if os.path.isfile(filename):
                 log.info('Cached: %s', filename)
                 continue
@@ -222,25 +274,6 @@ class FitbitExport(object):
             log.info('Downloading: %s', filename)
             hr = self.client.get_distance_intraday(d)
             self.write(filename, hr)
-
-    def elevation_intraday_filenames(self):
-        start = date(2017, 1, 1)
-        days = 0
-        while 1:
-            d = start + timedelta(days=days)
-            days += 1
-            if d == date.today():
-                return
-
-            filename = self.filename(
-                'elevation_intraday',
-                '{:04d}'.format(d.year),
-                'elevation_intraday.{:04d}.{:02d}.{:02d}.json'.format(
-                    d.year,
-                    d.month,
-                    d.day
-            ))
-            yield d, filename
 
     def get_elevation_intraday(self):
         def compress(data):
@@ -252,7 +285,7 @@ class FitbitExport(object):
             return minutes
 
         elevation = []
-        for d, filename in self.elevation_intraday_filenames():
+        for d, filename in self.day_filenames('elevation_intraday'):
             if not os.path.isfile(filename):
                 continue
             data = json.load(open(filename))
@@ -265,7 +298,9 @@ class FitbitExport(object):
         return elevation
 
     def sync_elevation_intraday(self):
-        for d, filename in self.elevation_intraday_filenames():
+        """Downloads elevation intraday data from the FitBit API
+        to the local data store. """
+        for d, filename in self.day_filenames('elevation_intraday'):
             if os.path.isfile(filename):
                 log.info('Cached: %s', filename)
                 continue
@@ -274,7 +309,13 @@ class FitbitExport(object):
             hr = self.client.get_elevation_intraday(d)
             self.write(filename, hr)
 
+    # Monthly syncs
     def sync_weight(self):
+        """Downloads weight data from the FitBit API
+        to the local data store. 
+        
+        One month at a time.
+        """
         month = 2015 * 12
         while 1:
             # sync start 2015, one month at a time 
