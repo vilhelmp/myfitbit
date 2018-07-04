@@ -168,12 +168,6 @@ class Fitbit(object):
         r.raise_for_status()
         return json.loads(r.text)['activities-distance-intraday']['dataset']
 
-    def get_elevation_intraday(self, date):
-        r = self.session.get('https://api.fitbit.com/1/user/-/activities/elevation/date/{}/{}/1min.json'
-            .format( str(date), str(date) ))
-        r.raise_for_status()
-        return json.loads(r.text)['activities-elevation-intraday']['dataset']
-
     def get_weight_range(self, date_start, date_end):
         r = self.session.get('https://api.fitbit.com/1/user/{}/body/log/weight/date/{}/{}.json'
             .format(self.user_id, str(date_start), str(date_end)))

@@ -40,7 +40,6 @@ def main():
     export.sync_heartrate_intraday()
     export.sync_steps_intraday()
     export.sync_distance_intraday()
-    export.sync_elevation_intraday()
     # Unevenly spaced data
     export.sync_activities()
     export.sync_weight()

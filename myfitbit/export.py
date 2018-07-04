@@ -275,40 +275,6 @@ class FitbitExport(object):
             hr = self.client.get_distance_intraday(d)
             self.write(filename, hr)
 
-    def get_elevation_intraday(self):
-        def compress(data):
-            minutes = [None] * 24 * 60
-            for o in data:
-                h, m, s = map(int, o['time'].split(':'))
-                i = h * 60 + m
-                minutes[i] = o['value']
-            return minutes
-
-        elevation = []
-        for d, filename in self.day_filenames('elevation_intraday'):
-            if not os.path.isfile(filename):
-                continue
-            data = json.load(open(filename))
-            if not data:
-                continue
-            elevation.append({
-                'date': d.isoformat(),
-                'minutes': compress(data),
-            })
-        return elevation
-
-    def sync_elevation_intraday(self):
-        """Downloads elevation intraday data from the FitBit API
-        to the local data store. """
-        for d, filename in self.day_filenames('elevation_intraday'):
-            if os.path.isfile(filename):
-                log.info('Cached: %s', filename)
-                continue
-
-            log.info('Downloading: %s', filename)
-            hr = self.client.get_elevation_intraday(d)
-            self.write(filename, hr)
-
     # Monthly syncs
     def sync_weight(self):
         """Downloads weight data from the FitBit API
