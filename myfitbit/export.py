@@ -32,7 +32,7 @@ class FitbitExport(object):
         the FitBit API to the local data store.
         
         Starts from 2015 and moves forward one month at a time 
-        until either hitting the rate limit, or todays date.
+        until either hitting the rate limit, or todays date - 5 days.
         
         '''
         month = 2015 * 12
@@ -41,10 +41,15 @@ class FitbitExport(object):
             month += 1
             date_end =   date(month // 12, month % 12 + 1, 1)
 
-            if date_start > date.today():
+            if date_start > (date.today()-timedelta(days=5)):
                 break
-
-            partial = date_end > date.today()
+            if date_end > (date.today()-timedelta(days=5)):
+                date_end = (date.today()-timedelta(days=5))
+            # now check if the dates are ordered wrong
+            if date_start>date_end:
+                break
+            
+            partial = date_end > (date.today()-timedelta(days=5))
             partial_filename = self.filename(name, '{}.{:04d}.{:02d}.partial.json'.format(
                 name,
                 date_start.year,

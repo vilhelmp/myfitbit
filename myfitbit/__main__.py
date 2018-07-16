@@ -5,6 +5,7 @@ import logging
 import json
 
 import requests
+from requests.exceptions import HTTPError
 
 from . import Fitbit, FitbitAuth
 from .export import FitbitExport
@@ -32,17 +33,21 @@ def main():
         raise
 
     export = FitbitExport('.', f)
-    
-    # Daily data
-    export.sync_sleep()
-    export.sync_heartrate()
-    # Intraday data
-    export.sync_heartrate_intraday()
-    export.sync_steps_intraday()
-    export.sync_distance_intraday()
-    # Unevenly spaced data
-    export.sync_activities()
-    export.sync_weight()
-
+    try:
+        # Daily data
+        export.sync_sleep()
+        export.sync_heartrate()
+        # Intraday data
+        export.sync_heartrate_intraday()
+        export.sync_steps_intraday()
+        export.sync_distance_intraday()
+        # Unevenly spaced data
+        export.sync_activities()
+        export.sync_weight()
+    except HTTPError as e:
+        status_code = e.response.status_code
+    #    if status_code == '429':
+    print( "HTTP error status code: {0}".format(status_code) )
+        
 if __name__ == '__main__':
     main()
