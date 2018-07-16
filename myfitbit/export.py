@@ -6,6 +6,10 @@ from datetime import date, time, timedelta
 
 log = logging.getLogger(__name__)
 
+# number of days to leave out to give you time to fully sync
+# usually a Fitbit device can hold 4-7 days in memory
+BUFFER_DAYS = 5
+
 class FitbitExport(object):
     '''
     Local data store of Fitbit json objects.
@@ -32,7 +36,10 @@ class FitbitExport(object):
         the FitBit API to the local data store.
         
         Starts from 2015 and moves forward one month at a time 
-        until either hitting the rate limit, or todays date - 5 days.
+        until either hitting the rate limit, or todays date.
+        
+        That is, ranged data are synced for full months. Filenames
+        generated directly in function.
         
         '''
         month = 2015 * 12
@@ -41,25 +48,28 @@ class FitbitExport(object):
             month += 1
             date_end =   date(month // 12, month % 12 + 1, 1)
 
-            if date_start > (date.today()-timedelta(days=5)):
+            if date_start > date.today():
                 break
-            if date_end > (date.today()-timedelta(days=5)):
-                date_end = (date.today()-timedelta(days=5))
-            # now check if the dates are ordered wrong
-            if date_start>date_end:
-                break
+            #
+            # sync to "name"/"year"/"name.year.month"
+            # comparison is strict. "date_end" will be first of month,
+            # and later corrected to last of previous month.
+            partial = date_end > date.today()
+            partial_filename = self.filename(name,
+                                            '{:04d}'.format(date_start.year), 
+                                            '{}.{:04d}.{:02d}.partial.json'.format(
+                                            name,
+                                            date_start.year,
+                                            date_start.month,
+                                        ))
             
-            partial = date_end > (date.today()-timedelta(days=5))
-            partial_filename = self.filename(name, '{}.{:04d}.{:02d}.partial.json'.format(
-                name,
-                date_start.year,
-                date_start.month,
-            ))
-            filename = self.filename(name, '{}.{:04d}.{:02}.json'.format(
-                name,
-                date_start.year,
-                date_start.month,
-            ))
+            filename = self.filename(name,
+                                    '{:04d}'.format(date_start.year), 
+                                    '{}.{:04d}.{:02}.json'.format(
+                                    name,
+                                    date_start.year,
+                                    date_start.month,
+                                ))
 
             if os.path.isfile(partial_filename):
                 os.remove(partial_filename)
@@ -78,12 +88,17 @@ class FitbitExport(object):
             self.write(filename, data)
 
     def day_filenames(self, name):
+        """
+        Iterator object for day filenames
+        which goes into intraday syncs (i.e. one whole day per file).
+        """
         start = date(2015, 1, 1)
         days = 0
         while 1:
             d = start + timedelta(days=days)
             days += 1
-            if d == (date.today()-timedelta(days=5)):
+            # if date is 5 days ago. stop
+            if d == (date.today() - timedelta(days=BUFFER_DAYS)):
                 return
 
             filename = self.filename(
@@ -96,11 +111,7 @@ class FitbitExport(object):
                     d.day
             ))
             yield d, filename
-
-    def month_filenames(self, name):
-        month = 2015 * 12
-        return "Not implemented"
-        
+      
     # Ranged syncs
     def sync_sleep(self):
         '''
@@ -306,13 +317,16 @@ class FitbitExport(object):
                 date_start.year,
                 date_start.month,
             ))
-
+            
+            # if partial file exists, remove it to make space for a 
+            # fully synced file (since not possible to sync partial day)
             if os.path.isfile(partial_filename):
                 os.remove(partial_filename)
-
+            
             if partial:
                 filename = partial_filename
-            elif os.path.isfile(filename):
+            # If file exists (and not partial), assume fully synced
+            elif os.path.isfile(filename):  
                 log.info('Cached: %s', filename)
                 continue
 
