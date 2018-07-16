@@ -83,7 +83,7 @@ class FitbitExport(object):
         while 1:
             d = start + timedelta(days=days)
             days += 1
-            if d == date.today():
+            if d == (date.today()-timedelta(days=5)):
                 return
 
             filename = self.filename(
