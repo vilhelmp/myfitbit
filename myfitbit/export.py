@@ -308,12 +308,16 @@ class FitbitExport(object):
             if date_start > date.today():
                 break
 
-            partial = date_end > date.today()
-            partial_filename = self.filename('weight', 'weight.{:04d}.{:02d}.partial.json'.format(
+            partial = date_end > ( date.today() - timedelta(days=BUFFER_DAYS) )
+            partial_filename = self.filename('weight',
+                                            '{:04d}'.format(date_start.year),
+                                            'weight.{:04d}.{:02d}.partial.json'.format(
                 date_start.year,
                 date_start.month,
             ))
-            filename = self.filename('weight', 'weight.{:04d}.{:02}.json'.format(
+            filename = self.filename('weight',
+                                            '{:04d}'.format(date_start.year),
+                                            'weight.{:04d}.{:02}.json'.format(
                 date_start.year,
                 date_start.month,
             ))
