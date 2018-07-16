@@ -34,16 +34,16 @@ def main():
 
     export = FitbitExport('.', f)
     try:
-        # Daily data
+        # Montly summaries per file
+        export.sync_weight()
         export.sync_sleep()
-        export.sync_heartrate()
-        # Intraday data
+        # Daily summaries per file
+        export.sync_activities()
+        # Daily (intraday) data per file
         export.sync_heartrate_intraday()
         export.sync_steps_intraday()
         export.sync_distance_intraday()
-        # Unevenly spaced data
-        export.sync_activities()
-        export.sync_weight()
+
     except HTTPError as e:
         status_code = e.response.status_code
     #    if status_code == '429':

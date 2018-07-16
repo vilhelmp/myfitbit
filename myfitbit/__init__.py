@@ -126,12 +126,6 @@ class Fitbit(object):
         r.raise_for_status()
         return json.loads(r.text)['user']
 
-    def get_sleep(self, date):
-        r = self.session.get('https://api.fitbit.com/1.2/user/{}/sleep/date/{}.json'
-            .format(self.user_id, str(date)))
-        r.raise_for_status()
-        return json.loads(r.text)['sleep']
-
     def get_sleep_range(self, date_start, date_end):
         r = self.session.get('https://api.fitbit.com/1.2/user/{}/sleep/date/{}/{}.json'
             .format(self.user_id, str(date_start), str(date_end)))
@@ -143,12 +137,6 @@ class Fitbit(object):
             .format(str(date), str(date)))
         r.raise_for_status()
         return json.loads(r.text)['activities-heart-intraday']['dataset']
-
-    def get_heartrate_range(self, date_start, date_end):
-        r = self.session.get('https://api.fitbit.com/1/user/-/activities/heart/date/{}/{}.json'
-            .format(str(date_start), str(date_end)))
-        r.raise_for_status()
-        return json.loads(r.text)['activities-heart']
 
     def get_activities(self, date):
         r = self.session.get('https://api.fitbit.com/1/user/-/activities/date/{}.json'
@@ -173,3 +161,26 @@ class Fitbit(object):
             .format(self.user_id, str(date_start), str(date_end)))
         r.raise_for_status()
         return json.loads(r.text)['weight']
+    
+    # currently *not in use functions*
+    def get_heartrate_range(self, date_start, date_end):
+        """
+        Gets daily heartrate summaries (resting, zones, calories)
+        This is the same information as synced through activities,
+        hence not currently in use.
+        """
+        r = self.session.get('https://api.fitbit.com/1/user/-/activities/heart/date/{}/{}.json'
+            .format(str(date_start), str(date_end)))
+        r.raise_for_status()
+        return json.loads(r.text)['activities-heart']
+        
+    def get_sleep(self, date):
+        """
+        Get single date of sleep data
+        Currently not in use, gives same info as ranged, just
+        one day per file instead of one month per file
+        """
+        r = self.session.get('https://api.fitbit.com/1.2/user/{}/sleep/date/{}.json'
+            .format(self.user_id, str(date)))
+        r.raise_for_status()
+        return json.loads(r.text)['sleep']
