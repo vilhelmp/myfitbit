@@ -141,6 +141,25 @@ class FitbitExport(object):
         '''
         self.sync_ranged_data('weight', self.client.get_weight_range)
 
+    def sync_activity_log(self):
+        #self.sync_ranged_data('activity_log', self.client.get_activities_log)
+        
+        # only use start 
+        offset=0
+        month = 2015 * 12
+        date_start = date(month // 12, month % 12 + 1, 1)
+        
+        filename = self.filename('activity_log',
+                                    'activity_log.json'
+                                )
+        
+        log.info('Downloading: %s', filename)
+        data = self.client.get_activities_log(date, offset=offset, limit=20)
+        last_start = data['activities'][-1]['startTime']
+        
+        
+        self.write(filename, data)
+        
     #Daily summaries
     def sync_activities(self):
         '''

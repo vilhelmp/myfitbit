@@ -143,7 +143,13 @@ class Fitbit(object):
             .format(str(date)))
         r.raise_for_status()
         return json.loads(r.text)
-   
+
+    def get_activities_log(self, date, offset, limit):
+        r = self.session.get('https://api.fitbit.com/1/user/-/activities/list.json?user-id=-&afterDate={0}&sort=asc&offset={1}&limit={2}'
+            .format(date, offset, limit))
+        r.raise_for_status()
+        return json.loads(r.text)
+    
     def get_steps_intraday(self, date):
         r = self.session.get('https://api.fitbit.com/1/user/-/activities/steps/date/{}/{}/1min.json'
             .format( str(date), str(date) ))

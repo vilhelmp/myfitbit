@@ -34,6 +34,7 @@ def main():
 
     export = FitbitExport('.', f)
     try:
+        export.sync_activity_log()
         # Montly summaries per file
         export.sync_weight()
         export.sync_sleep()
