@@ -1,0 +1,85 @@
+{
+  "activities": [],
+  "goals": {
+    "activeMinutes": 25,
+    "caloriesOut": 2800,
+    "distance": 8,
+    "floors": 10,
+    "steps": 11500
+  },
+  "summary": {
+    "activeScore": -1,
+    "activityCalories": 1416,
+    "caloriesBMR": 1737,
+    "caloriesOut": 2896,
+    "distances": [
+      {
+        "activity": "total",
+        "distance": 7.14
+      },
+      {
+        "activity": "tracker",
+        "distance": 7.14
+      },
+      {
+        "activity": "loggedActivities",
+        "distance": 0
+      },
+      {
+        "activity": "veryActive",
+        "distance": 2.06
+      },
+      {
+        "activity": "moderatelyActive",
+        "distance": 0.27
+      },
+      {
+        "activity": "lightlyActive",
+        "distance": 4.75
+      },
+      {
+        "activity": "sedentaryActive",
+        "distance": 0.05
+      }
+    ],
+    "elevation": 6.1,
+    "fairlyActiveMinutes": 12,
+    "floors": 2,
+    "heartRateZones": [
+      {
+        "caloriesOut": 2442.3568,
+        "max": 93,
+        "min": 30,
+        "minutes": 1349,
+        "name": "Out of Range"
+      },
+      {
+        "caloriesOut": 422.60192,
+        "max": 130,
+        "min": 93,
+        "minutes": 65,
+        "name": "Fat Burn"
+      },
+      {
+        "caloriesOut": 0,
+        "max": 158,
+        "min": 130,
+        "minutes": 0,
+        "name": "Cardio"
+      },
+      {
+        "caloriesOut": 0,
+        "max": 220,
+        "min": 158,
+        "minutes": 0,
+        "name": "Peak"
+      }
+    ],
+    "lightlyActiveMinutes": 260,
+    "marginalCalories": 806,
+    "restingHeartRate": 55,
+    "sedentaryMinutes": 662,
+    "steps": 9560,
+    "veryActiveMinutes": 32
+  }
+}

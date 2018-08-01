@@ -113,7 +113,7 @@ class FitbitExport(object):
                     d.day
             ))
             yield d, filename
-      
+              
     # Ranged syncs
     def sync_sleep(self):
         '''

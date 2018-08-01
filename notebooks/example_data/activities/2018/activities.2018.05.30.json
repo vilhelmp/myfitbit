@@ -1,0 +1,107 @@
+{
+  "activities": [
+    {
+      "activityId": 90009,
+      "activityParentId": 90009,
+      "activityParentName": "Run",
+      "calories": 136,
+      "description": "Running - 5 mph (12 min/mile)",
+      "distance": 1.799999,
+      "duration": 480000,
+      "hasStartTime": true,
+      "isFavorite": false,
+      "lastModified": "2018-05-30T06:21:23.000Z",
+      "logId": 14538330896,
+      "name": "Run",
+      "startDate": "2018-05-30",
+      "startTime": "07:50",
+      "steps": 1563
+    }
+  ],
+  "goals": {
+    "activeMinutes": 25,
+    "caloriesOut": 2800,
+    "distance": 8,
+    "floors": 10,
+    "steps": 11500
+  },
+  "summary": {
+    "activeScore": -1,
+    "activityCalories": 2617,
+    "caloriesBMR": 1735,
+    "caloriesOut": 3852,
+    "distances": [
+      {
+        "activity": "Run",
+        "distance": 1.799999
+      },
+      {
+        "activity": "total",
+        "distance": 13.77
+      },
+      {
+        "activity": "tracker",
+        "distance": 12
+      },
+      {
+        "activity": "loggedActivities",
+        "distance": 1.799999
+      },
+      {
+        "activity": "veryActive",
+        "distance": 4.47
+      },
+      {
+        "activity": "moderatelyActive",
+        "distance": 1.71
+      },
+      {
+        "activity": "lightlyActive",
+        "distance": 7.59
+      },
+      {
+        "activity": "sedentaryActive",
+        "distance": 0
+      }
+    ],
+    "elevation": 21.34,
+    "fairlyActiveMinutes": 59,
+    "floors": 7,
+    "heartRateZones": [
+      {
+        "caloriesOut": 2628.7593,
+        "max": 93,
+        "min": 30,
+        "minutes": 1207,
+        "name": "Out of Range"
+      },
+      {
+        "caloriesOut": 1026.31295,
+        "max": 130,
+        "min": 93,
+        "minutes": 172,
+        "name": "Fat Burn"
+      },
+      {
+        "caloriesOut": 91.00015,
+        "max": 158,
+        "min": 130,
+        "minutes": 7,
+        "name": "Cardio"
+      },
+      {
+        "caloriesOut": 28.20402,
+        "max": 220,
+        "min": 158,
+        "minutes": 2,
+        "name": "Peak"
+      }
+    ],
+    "lightlyActiveMinutes": 413,
+    "marginalCalories": 1606,
+    "restingHeartRate": 56,
+    "sedentaryMinutes": 498,
+    "steps": 17615,
+    "veryActiveMinutes": 39
+  }
+}

@@ -46,8 +46,8 @@ def main():
 
     except HTTPError as e:
         status_code = e.response.status_code
-    #    if status_code == '429':
-    print( "HTTP error status code: {0}".format(status_code) )
+        #    if status_code == '429':
+        print( "HTTP error status code: {0}".format(status_code) )
         
 if __name__ == '__main__':
     main()

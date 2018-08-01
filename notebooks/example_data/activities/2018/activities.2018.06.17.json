@@ -1,0 +1,128 @@
+{
+  "activities": [
+    {
+      "activityId": 90013,
+      "activityParentId": 90013,
+      "activityParentName": "Walk",
+      "calories": 94,
+      "description": "Walking less than 2 mph, strolling very slowly",
+      "distance": 0.754702,
+      "duration": 656000,
+      "hasStartTime": true,
+      "isFavorite": false,
+      "lastModified": "2018-06-17T10:40:35.000Z",
+      "logId": 14929586285,
+      "name": "Walk",
+      "startDate": "2018-06-17",
+      "startTime": "12:29",
+      "steps": 929
+    },
+    {
+      "activityId": 90009,
+      "activityParentId": 90009,
+      "activityParentName": "Run",
+      "calories": 242,
+      "description": "Running - 5 mph (12 min/mile)",
+      "distance": 3.239049,
+      "duration": 1109000,
+      "hasStartTime": true,
+      "isFavorite": false,
+      "lastModified": "2018-06-17T16:16:38.000Z",
+      "logId": 14931063865,
+      "name": "Run",
+      "startDate": "2018-06-17",
+      "startTime": "17:58",
+      "steps": 2638
+    }
+  ],
+  "goals": {
+    "activeMinutes": 25,
+    "caloriesOut": 2800,
+    "distance": 8,
+    "floors": 10,
+    "steps": 11500
+  },
+  "summary": {
+    "activeScore": -1,
+    "activityCalories": 2673,
+    "caloriesBMR": 1743,
+    "caloriesOut": 3904,
+    "distances": [
+      {
+        "activity": "Walk",
+        "distance": 0.754702
+      },
+      {
+        "activity": "Run",
+        "distance": 3.239049
+      },
+      {
+        "activity": "total",
+        "distance": 15.41
+      },
+      {
+        "activity": "tracker",
+        "distance": 15.36
+      },
+      {
+        "activity": "loggedActivities",
+        "distance": 3.993751
+      },
+      {
+        "activity": "veryActive",
+        "distance": 6.83
+      },
+      {
+        "activity": "moderatelyActive",
+        "distance": 1.31
+      },
+      {
+        "activity": "lightlyActive",
+        "distance": 7.27
+      },
+      {
+        "activity": "sedentaryActive",
+        "distance": 0
+      }
+    ],
+    "elevation": 27.43,
+    "fairlyActiveMinutes": 47,
+    "floors": 9,
+    "heartRateZones": [
+      {
+        "caloriesOut": 2515.419,
+        "max": 93,
+        "min": 30,
+        "minutes": 1196,
+        "name": "Out of Range"
+      },
+      {
+        "caloriesOut": 1032.0723,
+        "max": 130,
+        "min": 93,
+        "minutes": 146,
+        "name": "Fat Burn"
+      },
+      {
+        "caloriesOut": 210.99015,
+        "max": 158,
+        "min": 130,
+        "minutes": 16,
+        "name": "Cardio"
+      },
+      {
+        "caloriesOut": 42.8517,
+        "max": 220,
+        "min": 158,
+        "minutes": 3,
+        "name": "Peak"
+      }
+    ],
+    "lightlyActiveMinutes": 359,
+    "marginalCalories": 1690,
+    "restingHeartRate": 53,
+    "sedentaryMinutes": 467,
+    "steps": 19221,
+    "veryActiveMinutes": 84
+  }
+}
